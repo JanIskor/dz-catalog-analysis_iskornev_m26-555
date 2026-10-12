@@ -254,6 +254,7 @@ def total_high_rated_duration(movies):
 
 
 def build_report(movies):
+    print("ОТЧЕТ ПО КАТАЛОГУ")
     avg_rating = average_rating(movies)
     _, _, avg_age = catalog_age_stats(movies)
 
