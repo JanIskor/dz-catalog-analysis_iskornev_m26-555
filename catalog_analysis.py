@@ -104,6 +104,7 @@ def duration_in_hours(minutes):
     remaining_minutes = minutes % 60
     return f"{hours}ч {remaining_minutes}м"
 
+
 def rating_tier(rating):
     if rating >= 9:
         return "шедевр"
@@ -121,6 +122,7 @@ def decade_label(year):
             return "недавние"
         case _:
             return "старые"
+
 
 def print_non_comedy_titles(movies):
     for movie in movies:
@@ -154,6 +156,7 @@ def count_long_movies(movies, threshold=120):
 
     return count
 
+
 def normalize_title(title):
     words = title.split()
     normalized_words = []
@@ -176,8 +179,9 @@ def format_report_line(movie):
 
     return (
         f'"{title}" ({movie["year"]}) — '
-        f'{movie["rating"]}/10, {duration}, жанры: {genres}'
+        f"{movie['rating']}/10, {duration}, жанры: {genres}"
     )
+
 
 def titles_sorted_by_rating(movies):
     sorted_movies = sorted(movies, key=lambda movie: movie["rating"], reverse=True)
@@ -246,14 +250,42 @@ def iter_high_rated(movies, min_rating=8.0):
 
 
 def total_high_rated_duration(movies):
-    return sum(
-        movie["duration_min"]
-        for movie in movies
-        if movie["rating"] > 7
+    return sum(movie["duration_min"] for movie in movies if movie["rating"] > 7)
+
+
+def build_report(movies):
+    avg_rating = average_rating(movies)
+    _, _, avg_age = catalog_age_stats(movies)
+
+    print(f"Средний рейтинг: {avg_rating}")
+    print(f"Средний возраст фильмов: {avg_age} лет")
+
+    print("\nТоп-3 фильма:")
+
+    top_movies = sorted(
+        movies,
+        key=lambda movie: movie["rating"],
+        reverse=True,
+    )[:3]
+
+    for movie in top_movies:
+        print(f"  {format_report_line(movie)}")
+
+    print("\nФильмов по жанрам:")
+
+    genre_counts = count_by_genre(movies)
+
+    sorted_genres = sorted(
+        genre_counts.items(),
+        key=lambda item: (-item[1], item[0]),
     )
+
+    for genre, count in sorted_genres:
+        print(f"  {genre} — {count}")
+
+    genres = ", ".join(sorted(all_genres(movies)))
+    print(f"\nВсе жанры каталога: {genres}")
 
 
 if __name__ == "__main__":
-    print("Средний рейтинг:", average_rating(movies))
-    print("Возраст фильмов:", catalog_age_stats(movies))
-    print("Продолжительность:", duration_in_hours(155))
+    build_report(movies)
